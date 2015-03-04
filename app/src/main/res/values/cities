@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="cities_array">
+        <item>Mumbai</item>
+        <item>Bangalore</item>
+        <item>New Delhi</item>
+        <item>Chennai</item>
+        <item>Noida</item>
+        <item>Gurgaon</item>
+        <item>Chandigarh</item>
+        <item>Kolkata</item>
+    </string-array>
+
+    <string-array name="list_of_countries">
+        <item >USA</item>
+        <item >Uk</item>
+        <item >Canada</item>
+        <item >Canada1</item>
+        <item >Australia</item>
+        <item >France</item>
+        <item >Italy</item>
+        <item >China</item>
+        <item >Japan</item>
+        <item >Spain</item>
+    </string-array>
+</resources>
