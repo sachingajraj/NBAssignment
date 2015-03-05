@@ -4,5 +4,7 @@
     <string name="app_name">NBAssignment</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="search_hint">locality, property type...</string>
+    <string name="title_activity_search_display">SearchDisplayActivity</string>
 
 </resources>

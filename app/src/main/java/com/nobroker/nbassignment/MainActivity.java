@@ -1,6 +1,7 @@
 package com.nobroker.nbassignment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import org.json.JSONArray;
@@ -36,17 +38,28 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         addCitySpinner();
         addListenerOnSpinnerItemSelection();
+        addSearchButton();
     }
 
     public void addCitySpinner() {
         citySpinner = (Spinner) findViewById(R.id.cities_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.cities_array, android.R.layout.simple_spinner_item);
+                R.array.cities_array, R.layout.spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         citySpinner.setAdapter(adapter);
+    }
+
+    public void addSearchButton(){
+        final Button button = (Button) findViewById(R.id.findbutton);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent myIntent = new Intent( v.getContext(), SearchDisplayActivity.class);
+                startActivityForResult(myIntent,0);
+            }
+        });
     }
 
     public void addAutoCompleteLocalitySelector() {
