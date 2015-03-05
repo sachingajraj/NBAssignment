@@ -25,12 +25,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class MainActivity extends Activity {
     private Spinner citySpinner;
+    private String citySelected;
     private AutoCompleteTextView actv;
     private String[] localityNames;
+    private String[] latlng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,14 @@ public class MainActivity extends Activity {
         addCitySpinner();
         addListenerOnSpinnerItemSelection();
         addSearchButton();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        if (actv != null) {
+            actv.setText("");
+        }
     }
 
     public void addCitySpinner() {
@@ -52,12 +63,21 @@ public class MainActivity extends Activity {
         citySpinner.setAdapter(adapter);
     }
 
-    public void addSearchButton(){
+    public void addSearchButton() {
         final Button button = (Button) findViewById(R.id.findbutton);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent myIntent = new Intent( v.getContext(), SearchDisplayActivity.class);
-                startActivityForResult(myIntent,0);
+                String locality = actv.getText().toString();
+                if (!locality.equals("")) {
+                    int idx = Arrays.asList(localityNames).indexOf(locality);
+                    if (idx >= 0) {
+                        Intent myIntent = new Intent(v.getContext(), SearchDisplayActivity.class);
+                        myIntent.putExtra("CURRENT_CITY", citySelected);
+                        myIntent.putExtra("LOCALITY_NAME", locality);
+                        myIntent.putExtra("LAT_LNG", latlng[idx]);
+                        startActivityForResult(myIntent, 0);
+                    }
+                }
             }
         });
     }
@@ -74,8 +94,8 @@ public class MainActivity extends Activity {
         citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String city = parent.getItemAtPosition(position).toString().toLowerCase();
-                new FetchLocality().execute(city);
+                citySelected = parent.getItemAtPosition(position).toString().toLowerCase();
+                new FetchLocality().execute(citySelected);
             }
 
             @Override
@@ -108,16 +128,16 @@ public class MainActivity extends Activity {
             ArrayList<String> resultStr = new ArrayList<>();
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
             JSONArray localityArray = forecastJson.getJSONArray(LOCALITY_LIST);
-
+            String localityName;
+            String latlng;
             for (int i = 0; i < localityArray.length(); i++) {
-                String localityName;
-                String latitude;
-                String longitude;
-
                 // Get the JSON object representing the locality
                 JSONObject locality = localityArray.getJSONObject(i);
                 localityName = locality.getString(LOCALITY_NAME);
-                resultStr.add(localityName);
+                JSONObject location = locality.getJSONObject("location");
+                latlng = location.getString("ob") + "," + location.getString("pb");
+
+                resultStr.add(localityName + "#" + latlng);
             }
             return resultStr.toArray(new String[resultStr.size()]);
 
@@ -208,7 +228,13 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(String[] result) {
             if (result != null) {
-                localityNames = result;
+                localityNames = new String[result.length];
+                latlng = new String[result.length];
+                for (int i = 0; i < result.length; i++) {
+                    String[] val = result[i].split("#");
+                    localityNames[i] = val[0];
+                    latlng[i] = val[1];
+                }
                 addAutoCompleteLocalitySelector();
                 // New data is back from the server.  Hooray!
             }

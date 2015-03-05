@@ -61,6 +61,7 @@ public class SearchDisplayActivity extends ActionBarActivity {
         try {
             final String NOBROKER_BASE_URL =
                     "http://www.nobroker.in/property/json/rent/";
+            final String IMAGE_BASE_URL = "http://d3snwcirvb4r88.cloudfront.net/images/";
             final String RENT_PARAM = "rent";
             final String ORDER_BY_PARAM = "orderBy";
             final String LAT_LNG_PARAM = "lat_lng";
@@ -97,7 +98,15 @@ public class SearchDisplayActivity extends ActionBarActivity {
                                     PropertyListItem property = new PropertyListItem();
                                     String title = obj.getString("type") + " " + obj.getString("furnishing") + " at " + obj.getString("locality");
                                     property.setTitle(title);
-                                    property.setThumbnailUrl("http://api.androidhive.info/json/movies/1.jpg");
+                                    String url = "http://d3snwcirvb4r88.cloudfront.net/static/img/na_m.jpg";
+
+                                    JSONArray photos = obj.getJSONArray("photos");
+                                    if (photos.length() > 0) {
+                                        String imagePath = photos.getJSONObject(0).getJSONObject("imagesMap").getString("medium");
+                                        url = IMAGE_BASE_URL + obj.getString("id") + "/" + imagePath;
+                                    }
+
+                                    property.setThumbnailUrl(url);
                                     property.setRent(((Number) obj.get("rent"))
                                             .doubleValue());
                                     property.setSize(obj.getInt("propertySize"));
